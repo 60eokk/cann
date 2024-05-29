@@ -41,5 +41,27 @@ class MLP(nn.Module): # MLP: Multi Layer Perceptron
         return x
 
 model = MLP()
-print(model)
+# print(model)
 # terminal gives 2 input layer, 128 neurons, and 1 feature of output
+
+
+
+
+num_samples = 1000
+num_cells = 100
+X, T, U = generate_synthetic_data(num_samples, num_cells)
+X_train, X_test, T_train, T_test, U_train, U_test = train_test_split(X.flatten(), T.flatten(), U.flatten(), test_size=0.2)
+
+train_inputs = np.vstack([X_train, T_train]).T
+test_inputs = np.vstack([X_test, T_test]).T
+
+train_inputs = torch.tensor(train_inputs, dtype=torch.float32)
+test_inputs = torch.tensor(test_inputs, dtype=torch.float32)
+train_targets = torch.tensor(U_train, dtype=torch.float32).reshape(-1, 1)
+test_targets = torch.tensor(U_test, dtype=torch.float32).reshape(-1, 1)
+
+print(f"train_inputs shape: {train_inputs.shape}")
+print(f"train_targets shape: {train_targets.shape}")
+# 80000 samples. 
+# each sample has 2 feature (spatial coordinate X, temporal cordinate T)
+# each sample has 1 target value
