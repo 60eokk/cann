@@ -42,3 +42,4 @@ class MLP(nn.Module): # MLP: Multi Layer Perceptron
 
 model = MLP()
 print(model)
+# terminal gives 2 input layer, 128 neurons, and 1 feature of output
