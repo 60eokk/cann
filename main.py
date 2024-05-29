@@ -16,3 +16,29 @@ def generate_synthetic_data(num_samples, num_cells):
 
 
 X, T, U = generate_synthetic_data(1000, 100)
+
+# print(f"X shape: {X.shape}")
+# print(f"T shape: {T.shape}")
+# print(f"U shape: {U.shape}")
+# print(f"X sample: {X[:5, :5]}")
+# print(f"T sample: {T[:5, :5]}")
+# print(f"U sample: {U[:5, :5]}")
+
+
+
+
+class MLP(nn.Module): # MLP: Multi Layer Perceptron
+    def __init__(self):
+        super(MLP, self).__init__()
+        self.fc1 = nn.Linear(2, 128) # first layer
+        self.fc2 = nn.Linear(128, 128) # second
+        self.fc3 = nn.Linear(128, 1) # third
+
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+
+model = MLP()
+print(model)
