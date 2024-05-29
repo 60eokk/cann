@@ -60,8 +60,18 @@ test_inputs = torch.tensor(test_inputs, dtype=torch.float32)
 train_targets = torch.tensor(U_train, dtype=torch.float32).reshape(-1, 1)
 test_targets = torch.tensor(U_test, dtype=torch.float32).reshape(-1, 1)
 
-print(f"train_inputs shape: {train_inputs.shape}")
-print(f"train_targets shape: {train_targets.shape}")
-# 80000 samples. 
+# print(f"train_inputs shape: {train_inputs.shape}")
+# print(f"train_targets shape: {train_targets.shape}")
+# # 80000 samples. 
 # each sample has 2 feature (spatial coordinate X, temporal cordinate T)
 # each sample has 1 target value
+
+
+
+train_mean = train_inputs.mean(dim=0, keepdim=True)
+train_std = train_inputs.std(dim=0, keepdim=True)
+train_inputs = (train_inputs - train_mean) / train_std
+test_inputs = (test_inputs - train_mean) / train_std
+
+print(f"train_inputs normalized sample: \n{train_inputs[:5]}")
+
