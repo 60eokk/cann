@@ -73,5 +73,68 @@ train_std = train_inputs.std(dim=0, keepdim=True)
 train_inputs = (train_inputs - train_mean) / train_std
 test_inputs = (test_inputs - train_mean) / train_std
 
-print(f"train_inputs normalized sample: \n{train_inputs[:5]}")
+# print(f"train_inputs normalized sample: \n{train_inputs[:5]}")
+
+
+
+
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+
+
+num_epochs = 1000
+batch_size = 32
+
+for epoch in range(num_epochs):
+    permutation = torch.randperm(train_inputs.size()[0])
+    epoch_loss = 0
+    for i in range(0, train_inputs.size()[0], batch_size):
+        indices = permutation[i:i + batch_size]
+        batch_inputs, batch_targets = train_inputs[indices], train_targets[indices]
+
+        optimizer.zero_grad()
+        outputs = model(batch_inputs)
+        loss = criterion(outputs, batch_targets)
+        loss.backward()
+        optimizer.step()
+
+        epoch_loss += loss.item()
+
+    if (epoch + 1) % 100 == 0:
+        print(f'Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss / (train_inputs.size()[0] // batch_size):.4f}')
+
+
+    model.eval()
+    with torch.no_grad():
+        preds = model(test_inputs)
+        mse = criterion(preds, test_targets).item()
+        print(f'Mean Squared Error: {mse:.4f}')
+    print("Prediction and evaluation complete.")
+
+
+model.eval()
+with torch.no_grad():
+    preds = model(test_inputs)
+    mse = criterion(preds, test_targets).item()
+    print(f'Mean Squared Error: {mse:.4f}')
+print("Prediction and evaluation complete.")
+
+
+
+
+plt.figure(figsize=(10, 5))
+plt.subplot(1, 2, 1)
+plt.scatter(X_test, T_test, c=test_targets.numpy(), cmap='viridis', label='True')
+plt.title('True Solution')
+plt.colorbar()
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_test, T_test, c=preds.numpy(), cmap='viridis', label='Predicted')
+plt.title('Predicted Solution')
+plt.colorbar()
+
+plt.show()
+print("Visualization complete.")
+
 
