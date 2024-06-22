@@ -53,7 +53,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 model.compile(optimizer=optimizer, loss='mse')
 
 # Train the model with added print statements
-num_epochs = 300
+num_epochs = 100
 batch_size = 32
 model.fit(train_inputs, U_train.reshape(-1, 1), batch_size=batch_size, epochs=num_epochs, verbose=1)
 
