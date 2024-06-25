@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Generate synthetic data
-# Data is generated from equatino: u=sin(πX)⋅exp(−πT)
+# Data is generated from equation: u=sin(πX)⋅exp(−πT)
 def generate_synthetic_data(num_samples, num_cells):
+    # x: spatial coordinate, t: time, u: solution value
+    # sin(πX): creates sine graph, exp(−πT): creates exponential decay
     x = np.linspace(0, 1, num_cells)
     t = np.linspace(0, 1, num_samples)
     X, T = np.meshgrid(x, t)
@@ -15,47 +17,59 @@ def generate_synthetic_data(num_samples, num_cells):
 X, T, U = generate_synthetic_data(1000, 100)
 
 # Define the neural network model
-class MLP(tf.keras.Model):
+# MLP: Multilayer Perceptron: feedforward artificial neural network (info flows in one direction w/o cycle or loops)
+class MLP(tf.keras.Model): # Using Keras API
     def __init__(self):
         super(MLP, self).__init__()
-        self.fc1 = tf.keras.layers.Dense(128, activation='relu')
-        self.fc2 = tf.keras.layers.Dense(128, activation='relu')
-        self.fc3 = tf.keras.layers.Dense(1, activation='linear')
+        self.fc1 = tf.keras.layers.Dense(128, activation='relu') # first fully connected (dense) layer with 128 neurons and ReLU activation function
+        self.fc2 = tf.keras.layers.Dense(128, activation='relu') # second ~
+        self.fc3 = tf.keras.layers.Dense(1, activation='linear') # output layer of 1 neuron, linear activation function
 
-    def call(self, inputs):
-        x = self.fc1(inputs)
-        x = self.fc2(x)
-        x = self.fc3(x)
-        return x
+    def call(self, inputs): # forward pass of the network
+        x = self.fc1(inputs) # passes input through first layer 
+        x = self.fc2(x) # passes result to second layer
+        x = self.fc3(x) # passes result to output layer
+        return x # final output
 
 model = MLP()
-model.build(input_shape=(None, 2))
+model.build(input_shape=(None, 2)) # 2: input feature (X, T)
 model.summary()
 
 # Prepare the data
-num_samples = 1000
-num_cells = 100
+num_samples = 1000 # 1000 time samples
+num_cells = 100 # # 100 spatial points
+# X, T are 2D array of shape(1000,100) and U is the solution value
 X, T, U = generate_synthetic_data(num_samples, num_cells)
+# .flatten converts 2D arrays to 1D arrays
+# 0.2 means 20% is testing, 80% is training
 X_train, X_test, T_train, T_test, U_train, U_test = train_test_split(X.flatten(), T.flatten(), U.flatten(), test_size=0.2)
 
-train_inputs = np.vstack([X_train, T_train]).T
+
+train_inputs = np.vstack([X_train, T_train]).T # vstack (stack them up) making 2D array
 test_inputs = np.vstack([X_test, T_test]).T
 
 # Normalize the data
+# Normalization helps in faster convergence during training
 train_mean = np.mean(train_inputs, axis=0)
 train_std = np.std(train_inputs, axis=0)
 train_inputs = (train_inputs - train_mean) / train_std
 test_inputs = (test_inputs - train_mean) / train_std
 
-print(f"train_inputs normalized sample: \n{train_inputs[:5]}")
+print(f"train_inputs normalized sample: \n{train_inputs[:5]}") # print first 5 rows for verification
+
+# Normalization ensures all input features are on a similar scale, which is important for neural network training.
+# The same normalization parameters (mean and std) from the training data are applied to the test data to ensure consistency.
+
+
+
 
 # Define the loss function and optimizer
-optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-model.compile(optimizer=optimizer, loss='mse')
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001) # Adam optimizer(adaptive learning algorithm) with a learning rate of 0.001
+model.compile(optimizer=optimizer, loss='mse') # MSE is a common loss function for regression problems, measuring the average squared difference between predictions and actual values
 
 # Train the model with added print statements
 num_epochs = 100
-batch_size = 32
+batch_size = 32 # num of samples processed before model is updated
 model.fit(train_inputs, U_train.reshape(-1, 1), batch_size=batch_size, epochs=num_epochs, verbose=1)
 
 # Predict and evaluate the model
