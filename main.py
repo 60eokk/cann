@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Generate synthetic data
+# Data is generated from equatino: u=sin(πX)⋅exp(−πT)
 def generate_synthetic_data(num_samples, num_cells):
     x = np.linspace(0, 1, num_cells)
     t = np.linspace(0, 1, num_samples)
