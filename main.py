@@ -18,29 +18,16 @@ X, T, U = generate_synthetic_data(1000, 100)
 
 # Define the neural network model
 # MLP: Multilayer Perceptron: feedforward artificial neural network (info flows in one direction w/o cycle or loops)
-class MLP(tf.keras.Model): # Using Keras API
-    def __init__(self):
-        super(MLP, self).__init__()
-        self.fc1 = tf.keras.layers.Dense(128, activation='relu') # first fully connected (dense) layer with 128 neurons and ReLU activation function
-        self.fc2 = tf.keras.layers.Dense(128, activation='relu') # second ~
-        self.fc3 = tf.keras.layers.Dense(1, activation='linear') # output layer of 1 neuron, linear activation function
+def create_mlp():
+    return tf.keras.Sequential([
+        tf.keras.layers.Dense(128, activation='relu', input_shape=(2,)),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(1, activation='linear')
+    ])
 
-    def build(self, input_shape):
-        super(MLP, self).build(input_shape)
-        self.fc1.build(input_shape)
-        input_shape = self.fc1.compute_output_shape(input_shape)
-        self.fc2.build(input_shape)
-        input_shape = self.fc2.compute_output_shape(input_shape)
-        self.fc3.build(input_shape)
-
-    def call(self, inputs): # forward pass of the network
-        x = self.fc1(inputs) # passes input through first layer 
-        x = self.fc2(x) # passes result to second layer
-        x = self.fc3(x) # passes result to output layer
-        return x # final output
-
-model = MLP()
-# model.build(input_shape=(None, 2)) # 2: input feature (X, T)
+model = create_mlp()
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+model.compile(optimizer=optimizer, loss='mse')
 model.summary()
 
 # Prepare the data
