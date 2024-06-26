@@ -70,19 +70,26 @@ model.fit(train_inputs, U_train.reshape(-1, 1), batch_size=batch_size, epochs=nu
 # Predict and evaluate the model
 preds = model.predict(test_inputs)
 mse = tf.keras.losses.MSE(U_test.reshape(-1, 1), preds).numpy().mean()
-print(f'Mean Squared Error: {mse:.4f}')
+print(f'Mean Squared Error: {mse:.10f}')
+
+# Below is the previous visualization
+# plt.figure(figsize=(10, 5))
+# plt.subplot(1, 2, 1)
+# plt.scatter(X_test, T_test, c=U_test, cmap='viridis', label='True')
+# plt.title('True Solution')
+# plt.colorbar()
+# plt.subplot(1, 2, 2)
+# plt.scatter(X_test, T_test, c=preds.flatten(), cmap='viridis', label='Predicted')
+# plt.title('Predicted Solution')
+# plt.colorbar()
+# plt.show()
+# print("Visualization complete.")
 
 # Visualize the results
-plt.figure(figsize=(10, 5))
-plt.subplot(1, 2, 1)
-plt.scatter(X_test, T_test, c=U_test, cmap='viridis', label='True')
-plt.title('True Solution')
-plt.colorbar()
-
-plt.subplot(1, 2, 2)
-plt.scatter(X_test, T_test, c=preds.flatten(), cmap='viridis', label='Predicted')
-plt.title('Predicted Solution')
-plt.colorbar()
-
+plt.figure(figsize=(10, 6))
+plt.scatter(U_test, preds, alpha=0.5)
+plt.plot([U_test.min(), U_test.max()], [U_test.min(), U_test.max()], 'r--', lw=2)
+plt.xlabel('True Values')
+plt.ylabel('Predictions')
+plt.title('Predictions vs True Values')
 plt.show()
-print("Visualization complete.")
